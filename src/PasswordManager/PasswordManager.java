@@ -1,5 +1,11 @@
 package PasswordManager;
 
+/*
+ * Educational example of the Java AES API — NOT a real password manager.
+ * The security flaws below are left in deliberately and labeled with FLAW:
+ * comments; the README explains the production-grade fix for each.
+ */
+
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -10,8 +16,13 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class PasswordManager {
+    // FLAW: "AES" alone means AES/ECB/PKCS5Padding. ECB leaks plaintext
+    // patterns. Real fix: AES/GCM/NoPadding with a random IV per entry.
     private static final String ALGORITHM = "AES";
+    // FLAW: hardcoded key — anyone with this source can decrypt every entry.
+    // Real fix: derive the key from a master password via PBKDF2/Argon2.
     private static final byte[] keyValue = new byte[] { 'T', 'h', 'e', 'B', 'e', 's', 't', 'S', 'e', 'c', 'r', 'e', 't', 'K', 'e', 'y' };
+    // FLAW: in-memory only — every entry is lost when the program exits.
     private Map<String, String> passwordStore = new HashMap<>();
 
     public static void main(String[] args) {
